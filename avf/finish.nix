@@ -34,7 +34,9 @@ stdenv.mkDerivation {
 
     OFFSETS=($(sfdisk -l $diskImage -o Start,Sectors | tail -n 2 | grep -o "[0-9]*"))
 
-    echo "nixos_avf/${lib.replaceStrings [ "-" ] [ "_" ] stdenv.targetPlatform.system}/${lib.trivial.version}-0-$(date)" > build_id
+    # The Terminal parses the date with "EEE MMM dd HH:mm:ss z yyyy": the day needs a leading
+    # zero, plain $(date) pads it with a space ("Nov  3") and the Terminal crashes on it (#40)
+    echo "nixos_avf/${lib.replaceStrings [ "-" ] [ "_" ] stdenv.targetPlatform.system}/${lib.trivial.version}-0-$(LC_ALL=C date -u '+%a %b %d %H:%M:%S UTC %Y')" > build_id
 
     # bs=512 -> sector size is 512, skip=start sector, count=size in sectors
     dd if=$diskImage of=efi_part bs=512 skip="''${OFFSETS[0]}" count="''${OFFSETS[1]}"
