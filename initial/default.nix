@@ -103,5 +103,6 @@ in
 
     avf.extraFiles."README.md" = ./README-image.md;
     avf.extraFiles."replace.sh" = ./replace.sh;
+    avf.extraFiles."install-in-place.sh" = ./install-in-place.sh;
   };
 }

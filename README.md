@@ -10,6 +10,32 @@ The system changes have been taken from https://android.googlesource.com/platfor
 
 [ » Chat on Matrix ](https://matrix.to/#/#nixos-avf:mkg20001.io)
 
+# Android 17
+
+The Android 17 Terminal boots its bundled Debian kernel directly, no longer lets the VM
+write the Terminal's files (`/mnt/internal` is gone) and shows "Upgrade to newer terminal"
+for any disk it didn't install itself. The image below and the app's replace method can't
+work there. Instead, NixOS is installed in place of Debian from inside the Terminal:
+
+1. Let the Terminal install its Debian image. If it shows "Upgrade to newer terminal" from
+   an earlier attempt, clear the Terminal app's storage first (Settings > Apps > Terminal >
+   Storage & cache > Clear storage).
+2. Give the VM at least 2 GB of memory (Terminal settings) and about 6 GB of free disk.
+3. Run in the Terminal:
+
+   ```sh
+   wget https://raw.githubusercontent.com/slopmaxxer/nixos-avf/android-17/initial/install-in-place.sh
+   sudo bash install-in-place.sh
+   ```
+
+   `NIXOS_CHANNEL=https://nixos.org/channels/nixos-26.05` before `bash` picks a stable release.
+4. Close and reopen the Terminal. The first start moves Debian to `/old-root` and boots NixOS;
+   delete it with `sudo rm -rf /old-root`.
+
+The system uses `avf.terminal = 17` (see `avf/default.nix`). Not working yet: the guest agent
+(`linux_vm_manager`: port forwarding, automatic disk resize, clean shutdown), graphics and kernel
+modules (Debian's kernel keeps them in its initrd).
+
 # Installation using App
 
 There is now an app that performs the installation steps for you.

@@ -8,6 +8,12 @@ if [ -e /sdcard ]; then
   exit 2
 fi
 
+# Android 17 Terminal: Debian's kernel boots /dev/vda1 directly and /mnt/internal is gone,
+# so the Terminal's disk can't be replaced from here; install NixOS in place instead
+if ! mountpoint -q /mnt/internal && grep -qw 'root=/dev/vda1' /proc/cmdline; then
+  exec sudo bash "$(dirname "$(readlink -f "$0")")/install-in-place.sh"
+fi
+
 IMG_LOC=/mnt/shared/image
 if [ -e "/mnt/shared/Download/image" ]; then
   IMG_LOC=/mnt/shared/Download/image
