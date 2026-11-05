@@ -14,7 +14,9 @@ fi
 if ! mountpoint -q /mnt/internal && grep -qw 'root=/dev/vda1' /proc/cmdline; then
   for dir in "$(dirname "$(readlink -f "$0")")" /mnt/shared/Download/image /mnt/shared/image; do
     if [ -e "$dir/install-in-place.sh" ]; then
-      exec sudo bash "$dir/install-in-place.sh"
+      # root gets EOPNOTSUPP opening files on the shared folder, so run a copy
+      cp "$dir/install-in-place.sh" "$HOME/install-in-place.sh"
+      exec sudo bash "$HOME/install-in-place.sh"
     fi
   done
   echo "install-in-place.sh not found next to replace.sh" >&2
